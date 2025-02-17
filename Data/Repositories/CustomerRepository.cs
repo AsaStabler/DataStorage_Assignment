@@ -20,7 +20,7 @@ public class CustomerRepository(DataContext context) : BaseRepository<CustomerEn
         {
             var entities = await _context.Customers
                 .Include(x => x.Projects)
-                    .ToListAsync();
+                .ToListAsync();
             return entities;
         }
         catch (Exception ex)

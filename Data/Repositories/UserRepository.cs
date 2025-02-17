@@ -17,7 +17,7 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
         {
             var entities = await _context.Users
                 .Include(x => x.Projects)
-                    .ToListAsync();
+                .ToListAsync();
             return entities;
         }
         catch (Exception ex)

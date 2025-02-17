@@ -17,7 +17,7 @@ public class StatusTypeRepository(DataContext context) : BaseRepository<StatusTy
         {
             var entities = await _context.StatusTypes
                 .Include(x => x.Projects)
-                    .ToListAsync();
+                .ToListAsync();
             return entities;
         }
         catch (Exception ex)
