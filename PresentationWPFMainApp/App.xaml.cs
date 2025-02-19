@@ -1,14 +1,13 @@
 ﻿using Business.Interfaces;
 using Business.Services;
+using Data.Contexts;
 using Data.Interfaces;
 using Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PresentationWPFMainApp.ViewModels;
 using PresentationWPFMainApp.Views;
-
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace PresentationWPFMainApp;
@@ -22,15 +21,23 @@ public partial class App : Application
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                //services.AddSingleton<IFileService>(new FileService("Data", "contactlist.json"));
-                services.AddSingleton<IProjectRepository, ProjectRepository>();
-                services.AddSingleton<IProjectService, ProjectService>();
+                services.AddDbContext<DataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Projects\DataStorage_Assignment\Data\Databases\local_database.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True"));
+                services.AddScoped<IProjectRepository, ProjectRepository>();
+                services.AddScoped<IProjectService, ProjectService>();
+                services.AddScoped<ICustomerRepository, CustomerRepository>();
+                services.AddScoped<ICustomerService, CustomerService>();
+
+                services.AddScoped<IStatusTypeRepository, StatusTypeRepository>();
+                services.AddScoped<IStatusTypeService, StatusTypeService>();
+
+                services.AddScoped<IUserRepository, UserRepository>();
+                services.AddScoped<IUserService, UserService>();
+
+                services.AddScoped<IServiceRepository, ServiceRepository>();
+                services.AddScoped<IServiceService, ServiceService>();
 
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
-
-                //services.AddTransient<GetStartedViewModel>();
-                //services.AddTransient<GetStartedView>();
 
                 services.AddTransient<ProjectsViewModel>();
                 services.AddTransient<ProjectsView>();
@@ -38,11 +45,11 @@ public partial class App : Application
                 services.AddTransient<AddProjectViewModel>();
                 services.AddTransient<AddProjectView>();
 
-                //services.AddTransient<DetailsContactViewModel>();
-                //services.AddTransient<DetailsContactView>();
+                services.AddTransient<DetailsProjectViewModel>();
+                services.AddTransient<DetailsProjectView>();
 
-                //services.AddTransient<EditContactViewModel>();
-                //services.AddTransient<EditContactView>();
+                services.AddTransient<EditProjectViewModel>();
+                services.AddTransient<EditProjectView>();
             })
             .Build();
     }

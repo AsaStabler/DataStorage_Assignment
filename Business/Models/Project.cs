@@ -1,16 +1,13 @@
 ﻿namespace Business.Models;
 
+//TO DO - Ska rensa/ordna om i modellen Project *********
 public class Project
 {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
 
-    //This did not help in the display of the DateTime,
-    //both date and time were still displayed
-    //DateTime måste antagligen parsas eller konvertas på något sätt.
-    //men det kan också lösas med WPF date hantering (?!)
-    //[Column(TypeName = "date")]
+    //TO DO: Hantera null värden av DateTime från databasen, dvs 0001-01-01
     public DateTime StartDate  { get; set; } 
     public DateTime EndDate { get; set; }
     
@@ -19,6 +16,7 @@ public class Project
 
     public int StatusId { get; set; }
     public string StatusName { get; set; } = null!;
+    public Customer Customer { get; set; } = null!;
 
     public int UserId { get; set; }
     public string UserDisplayName { get; set; } = null!;

@@ -8,6 +8,7 @@ namespace Data.Repositories;
 
 public abstract class BaseRepository<TEntity>(DataContext context) : IBaseRepository<TEntity> where TEntity : class
 {
+    //TO DO *********
     //protected readonly DataContext _context = context;
     private readonly DataContext _context = context;
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
@@ -78,7 +79,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             if (existingEntity == null)
                 return null!;
 
-            //_dbSet.Update(entity);
+            //_dbSet.Update(entity);  KAN TA BORT
             _context.Entry(existingEntity).CurrentValues.SetValues(updateEntity);
             await _context.SaveChangesAsync();
             return existingEntity;

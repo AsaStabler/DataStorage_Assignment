@@ -37,39 +37,37 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
     }
 
     //Inför Try - Catch här
-    // UPDATE   *** NOT COMPLETED ***
-    public async Task<Project?> UpdateProjectAsync(int Id, ProjectUpdateForm form)
+    // UPDATE  
+    public async Task<Project?> UpdateProjectAsync(int Id, ProjectUpdateForm updateForm)
     {
         var existingProject = await GetProjectEntityAsync(x => x.Id == Id);
         if (existingProject == null)
             return null;
 
-        existingProject.Title = string.IsNullOrWhiteSpace(form.Title) ? existingProject.Title : form.Title;
-        existingProject.Description = string.IsNullOrWhiteSpace(form.Description) ? existingProject.Description : form.Description;
-        //existingProject.StartDate = string.IsNullOrWhiteSpace(form.StartDate) ? existingProject.StartDate : form.StartDate;
-        //existingProject.EndDate = string.IsNullOrWhiteSpace(form.EndDate) ? existingProject.EndDate : form.EndDate;
+        //ev. TO DO - alt. för att flytta ut all den här koden från ProjectServic
+        //existingProject = ProjectFactory(existingProject, updateForm)
 
-        /*** Cannot convert from ´int´ to ´string´  ***/
-        //existingProject.CustomerId = string.IsNullOrWhiteSpace(form.CustomerId) ? existingProject.CustomerId : form.CustomerId;
-        //existingProject.StatusId = string.IsNullOrWhiteSpace(form.StatusId) ? existingProject.StatusId : form.StatusId;
-        //existingProject.UserId = string.IsNullOrWhiteSpace(form.UserId) ? existingProject.UserId : form.UserId;
-        //existingProject.ServiceId = string.IsNullOrWhiteSpace(form.ServiceId) ? existingProject.ServiceId : form.ServiceId;
-        //existingProject.Total = string.IsNullOrWhiteSpace(form.Total) ? existingProject.Total : form.Total;
+        existingProject.Title = string.IsNullOrWhiteSpace(updateForm.Title) ? existingProject.Title : updateForm.Title;
+        existingProject.Description = updateForm.Description;  //Description can be updated to null or empty
 
-        if (existingProject.CustomerId != form.CustomerId) existingProject.CustomerId = form.CustomerId;
-        if (existingProject.StatusId != form.StatusId) existingProject.StatusId = form.StatusId;
-        if (existingProject.UserId != form.UserId) existingProject.UserId = form.UserId;
-        if (existingProject.ServiceId != form.ServiceId) existingProject.ServiceId = form.ServiceId;
+        if (existingProject.StartDate != updateForm.StartDate) existingProject.StartDate = Convert.ToDateTime(updateForm.StartDate);
+        if (existingProject.EndDate != updateForm.EndDate) existingProject.EndDate = Convert.ToDateTime(updateForm.EndDate);
 
-        //if (existingProject.Total != form.Total) existingProject.Total = (decimal)form.Total!;   //TO DO: Test the conversion 
+        if (existingProject.CustomerId != updateForm.CustomerId  && updateForm.CustomerId != 0) 
+            existingProject.CustomerId = updateForm.CustomerId;
+        if (existingProject.StatusId != updateForm.StatusId && updateForm.StatusId != 0) 
+            existingProject.StatusId = updateForm.StatusId;
+        if (existingProject.UserId != updateForm.UserId && updateForm.UserId != 0) 
+            existingProject.UserId = updateForm.UserId;
+        if (existingProject.ServiceId != updateForm.ServiceId && updateForm.ServiceId != 0) 
+            existingProject.ServiceId = updateForm.ServiceId;
+
+        //TO DO: Test the conversion OR remove Total property
+        //if (existingProject.Total != form.Total) existingProject.Total = (decimal)form.Total!;   
 
         var result = await _projectRepository.UpdateAsync(x => x.Id == Id, existingProject);
-
-        if (result != null)
-            return ProjectFactory.Create(existingProject);
-        else
-            return null;
-        //return result ? ProjectFactory.Create(existingProject) : null;
+       
+        return (result != null) ? ProjectFactory.Create(existingProject) : null;
     }
 
     //Inför Try - Catch här
