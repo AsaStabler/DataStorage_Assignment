@@ -43,8 +43,11 @@
                             <TextBlock Text="{Binding StartDate}" FontSize="10" />
                             <TextBlock Text="{Binding EndDate}" FontSize="10" />
                             <TextBlock Text="{Binding StatusName}" FontSize="10" />
+                            <TextBlock />
 
-                            <TextBlock Foreground="#333333">
+                            <!--TextBlock > <LineBreak /> </TextBlock-->
+
+                            <!--TextBlock Foreground="#333333">
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat="{}{0} {1} {2} {3} {4}">
                                         <Binding Path="Id" />
@@ -55,7 +58,7 @@
                                     </MultiBinding>
                                 </TextBlock.Text>
                                 <LineBreak />
-                            </TextBlock>
+                            </TextBlock-->
                         </StackPanel>
 
                         <StackPanel Grid.Column="1"  Orientation="Horizontal">

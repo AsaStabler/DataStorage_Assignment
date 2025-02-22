@@ -23,8 +23,9 @@ public partial class AddProjectViewModel : ObservableObject
     [ObservableProperty]
     private string headline = "New Contact";
 
+    //The ProjectRegistrationForm to be filled with input data in AddProjectView
     [ObservableProperty]
-    private ProjectRegistrationForm _project = new();
+    private ProjectRegistrationForm _project = new(); 
 
     //To populate the Customers ComboBox
     [ObservableProperty]
@@ -90,7 +91,6 @@ public partial class AddProjectViewModel : ObservableObject
         Services = new ObservableCollection<Service>(tempServices);
     }
 
-
     [RelayCommand]
     private async Task Save()
     {
@@ -98,7 +98,6 @@ public partial class AddProjectViewModel : ObservableObject
         Project.StatusId = SelectedStatusType.Id;
         Project.UserId = SelectedUser.Id;
         Project.ServiceId = SelectedService.Id;
-        Project.Total = 10000;   //TO DO: Ska lösas eller tas bort! ****
 
         // Saves a new Project to the database
         var result = await _projectService.CreateProjectAsync(Project);

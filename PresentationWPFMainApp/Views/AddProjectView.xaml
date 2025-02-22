@@ -61,8 +61,6 @@
                       SelectedItem="{Binding Path=SelectedService, Mode=TwoWay}"
                       DisplayMemberPath="ServiceName" 
                       SelectedValuePath="Id"/>
-
-
         </StackPanel>
 
         <StackPanel Grid.Row="2">

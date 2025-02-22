@@ -13,12 +13,11 @@ public static class ProjectFactory
             Title = form.Title,
             Description = form.Description!,
             StartDate = Convert.ToDateTime(form.StartDate),
-            EndDate = Convert.ToDateTime(form.EndDate),
+            EndDate = form.EndDate,     //EndDate is allowed to be null
             CustomerId = form.CustomerId,
             StatusId = form.StatusId,
             UserId = form.UserId,
             ServiceId = form.ServiceId,
-            Total = form.Total,
         };
     }
 
@@ -36,7 +35,7 @@ public static class ProjectFactory
             Id = entity.Id,
             Title = entity.Title,
             Description = entity.Description!,
-            //TO DO: Hantera null värden av DateTime från databasen, dvs 0001-01-01
+           
             StartDate = entity.StartDate,
             EndDate = entity.EndDate,
 
@@ -54,14 +53,29 @@ public static class ProjectFactory
             //TO DO: ServiceDescription could be declared in a Service model (or factory?)
             ServiceId = entity.ServiceId,
             ServiceDescription = entity.Service.ServiceName + " (" + entity.Service.Price + " kr/h)",
-
-            Total = entity.Total,
         };
     }
 
-    public static ProjectEntity Update(ProjectEntity existingProject, ProjectUpdateForm updateForm)
+    public static ProjectEntity MapForUpdate(ProjectEntity existingProject, ProjectUpdateForm updateForm)
     {
-       return existingProject;
+        existingProject.Title = string.IsNullOrWhiteSpace(updateForm.Title) ? existingProject.Title : updateForm.Title;
+        //Description is allowed to be null or empty
+        existingProject.Description = updateForm.Description;
+
+        if (existingProject.StartDate != updateForm.StartDate) existingProject.StartDate = Convert.ToDateTime(updateForm.StartDate);
+        //End Date is allowed to be NULL
+        if (existingProject.EndDate != updateForm.EndDate) existingProject.EndDate = updateForm.EndDate;
+
+        if (existingProject.CustomerId != updateForm.CustomerId && updateForm.CustomerId != 0)
+            existingProject.CustomerId = updateForm.CustomerId;
+        if (existingProject.StatusId != updateForm.StatusId && updateForm.StatusId != 0)
+            existingProject.StatusId = updateForm.StatusId;
+        if (existingProject.UserId != updateForm.UserId && updateForm.UserId != 0)
+            existingProject.UserId = updateForm.UserId;
+        if (existingProject.ServiceId != updateForm.ServiceId && updateForm.ServiceId != 0)
+            existingProject.ServiceId = updateForm.ServiceId;
+
+        return existingProject;
     }
 
 }

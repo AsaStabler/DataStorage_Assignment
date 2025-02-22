@@ -9,8 +9,7 @@ namespace Data.Repositories;
 
 public class UserRepository(DataContext context) : BaseRepository<UserEntity>(context), IUserRepository
 {
-    private readonly DataContext _context = context;
-
+    /*
     public override async Task<IEnumerable<UserEntity>> GetAllAsync()
     {
         try
@@ -26,6 +25,7 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
             return [];
         }
     }
+    */
 
     public override async Task<UserEntity> GetAsync(Expression<Func<UserEntity, bool>> expression)
     {

@@ -1,6 +1,7 @@
 ﻿using Data.Contexts;
 using Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -8,12 +9,71 @@ namespace Data.Repositories;
 
 public abstract class BaseRepository<TEntity>(DataContext context) : IBaseRepository<TEntity> where TEntity : class
 {
-    //TO DO *********
-    //protected readonly DataContext _context = context;
-    private readonly DataContext _context = context;
-    private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
+    protected readonly DataContext _context = context;
+    protected readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
+    private IDbContextTransaction _transaction = null!;
+
+    #region Transaction Management
+
+    public virtual async Task BeginTransactionAsync()
+    {
+        _transaction ??= await _context.Database.BeginTransactionAsync();
+    }
+
+    public virtual async Task CommitTransactionAsync()
+    {
+        if (_transaction != null)
+        {
+            await _transaction.CommitAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null!;
+        }
+
+    }
+
+    public virtual async Task RollbackTransactionAsync()
+    {
+        if (_transaction != null)
+        {
+            await _transaction.RollbackAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null!;
+        }
+    }
+
+    #endregion
+
+    #region CRUD
 
     // CREATE
+    // (ADD, has to be followed by a SAVE)
+    public virtual async Task AddAsync(TEntity entity)
+    { 
+        await _dbSet.AddAsync(entity);
+    }
+
+    // SAVE (for Transaction Management)
+    //Can not have try-catch here, since it would circumvent the catch-statment in the Service
+    //and then Rollback would not be performed
+    public virtual async Task<int> SaveAsync()
+    { 
+        return await _context.SaveChangesAsync();
+    }
+
+    // UPDATE , has to be followed by a SAVE)
+    public virtual void Update(TEntity updateEntity)
+    {
+        _dbSet.Update(updateEntity);
+    }
+
+    // DELETE, has to be followed by a SAVE)
+    public virtual void Remove(TEntity entity)
+    {
+        _dbSet.Remove(entity);
+    }
+
+    // OLD CREATE - W/O Transaction Management
+    /*
     public virtual async Task<TEntity> CreateAsync(TEntity entity)  //Ev returnera bool istället
     {
         if (entity == null)
@@ -31,8 +91,35 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         }
     }
+    */
 
     // READ
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsyncWithQuery(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeExpression = null) 
+    {
+        IQueryable<TEntity> query = _dbSet;
+
+        if (includeExpression != null)
+            query = includeExpression(query);
+
+        var entities = await query.ToListAsync();
+        return entities;
+    }
+
+    public virtual async Task<TEntity> GetAsyncWithQuery(Expression<Func<TEntity, bool>> expression, Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeExpression = null) 
+    {
+        if (expression == null)
+            return null!;
+
+        IQueryable<TEntity> query = _dbSet;
+
+        if (includeExpression != null)
+            query = includeExpression(query);
+
+        var entity = await query.FirstOrDefaultAsync(expression);
+        return entity!;
+    }
+
+
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         try
@@ -66,7 +153,8 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
         }
     }
 
-    // UPDATE
+    /*
+    //OLD UPDATE - W/O Transaction Management
     //public virtual async Task<bool> UpdateAsync(TEntity entity) //Retur av en bool
     public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
     {
@@ -90,10 +178,12 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         }
     }
+    */
 
-    // DELETE
+    // OLD DELETE - W/O Transaction Management
     // *** NOTE: Exempel på hur göra delete med input parameter av HELT OBJEKT (inte expression) ***
     //public virtual async Task<bool> RemoveAsync(TEntity entity) //Tors 30/1
+    /*
     public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
     {
         if (expression == null)
@@ -116,11 +206,12 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return false;
 
         }
-    }
-
+    } */
 
     public virtual async Task<bool> AlreadyExistsAsync(Expression<Func<TEntity, bool>> expression)
     {
         return await _dbSet.AnyAsync(expression);
     }
+
+    #endregion
 }

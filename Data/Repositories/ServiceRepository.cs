@@ -9,8 +9,7 @@ namespace Data.Repositories;
 
 public class ServiceRepository(DataContext context) : BaseRepository<ServiceEntity>(context), IServiceRepository
 {
-    private readonly DataContext _context = context;
-
+    /*
     public override async Task<IEnumerable<ServiceEntity>> GetAllAsync()
     {
         try
@@ -26,6 +25,7 @@ public class ServiceRepository(DataContext context) : BaseRepository<ServiceEnti
             return [];
         }
     }
+    */
 
     public override async Task<ServiceEntity> GetAsync(Expression<Func<ServiceEntity, bool>> expression)
     {

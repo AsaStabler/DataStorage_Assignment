@@ -7,9 +7,8 @@ public class Project
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
 
-    //TO DO: Hantera null värden av DateTime från databasen, dvs 0001-01-01
     public DateTime StartDate  { get; set; } 
-    public DateTime EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
     
     public int CustomerId { get; set; }
     public string CustomerName { get; set; } = null!;
@@ -24,5 +23,5 @@ public class Project
     public int ServiceId { get; set; }
     public string ServiceDescription { get; set; } = null!;
 
-    public decimal Total { get; set; }
+    //public decimal Total { get; set; }
 }

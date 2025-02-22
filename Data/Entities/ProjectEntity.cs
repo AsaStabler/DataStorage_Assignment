@@ -14,9 +14,7 @@ public class ProjectEntity
     public DateTime StartDate { get; set; }
 
     [Column(TypeName = "date")]
-    public DateTime EndDate { get; set; } 
-    
-    public decimal Total { get; set; }     
+    public DateTime? EndDate { get; set; } 
 
     public int CustomerId { get; set; }
     public CustomerEntity Customer { get; set; } = null!;

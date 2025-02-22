@@ -4,89 +4,221 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Business.Services;
 
-public class ProjectService(IProjectRepository projectRepository) : IProjectService
+public class ProjectService(IProjectRepository projectRepository, ICustomerService customerService, IStatusTypeService statusTypeService,
+                            IUserService userService, IServiceService serviceService) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
 
-    //Inför Try - Catch här
     // CREATE
     public async Task<bool> CreateProjectAsync(ProjectRegistrationForm form)
     {
-        //To Do ***
-        //var customer = await GetCustomerEntityAsync(x => x.Email == form.Email);
-        //if (customer != null)
-        //    return false;
+        //Validation of input data, including controls that Foreign Keys exist in database
+        if (await IsValid(form)) {
 
+            //Transaction Management
+            await _projectRepository.BeginTransactionAsync();
+            try
+            {
+                await _projectRepository.AddAsync(ProjectFactory.Create(form));
+                await _projectRepository.SaveAsync();
+                await _projectRepository.CommitTransactionAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error creating a Project :: {ex.Message}");
+                await _projectRepository.RollbackTransactionAsync();
+                return false;
+            }
+        } 
+        else 
+            return false;
+
+        // OLD CreateProjectAsync
         //NOTE! BaseRepository.CreateAsync returnerar det skapade objektet, inte true-false
-        var result = await _projectRepository.CreateAsync(ProjectFactory.Create(form));
+        //var result = await _projectRepository.CreateAsync(ProjectFactory.Create(form));
         //return result;
-        return true;   //Ska ändras!!!
+        //return true;   //Ska ändras!!!
     }
 
-    //Inför Try - Catch här
-    // READ
-    public async Task<IEnumerable<Project>> GetAllProjectsAsync()
+    private async Task<bool> IsValid(ProjectRegistrationForm form)
     {
-        var entities = await _projectRepository.GetAllAsync();
+        //Check that ProjectRegistrationForm is not null
+        if (form == null) return false;
+
+        //Title can not be null
+        if (string.IsNullOrWhiteSpace(form.Title)) return false;
+
+        //StartDate can not be null; if not selected in drop down then it´s value is null here
+        //End Date is allowed to be null, i.e. not selected
+        if (form.StartDate == null) return false;
+
+        //Check if Foreign Keys exist in database
+        var customer = await customerService.GetCustomerEntityAsync(x => x.Id == form.CustomerId);
+        var status = await statusTypeService.GetStatusTypeEntityAsync(x => x.Id == form.StatusId);
+        var user = await userService.GetUserEntityAsync(x => x.Id == form.UserId);
+        var service = await serviceService.GetServiceEntityAsync(x => x.Id == form.ServiceId);
+
+        //If any of the Foreign Keys do not exist in db, then Project can not be created
+        if (customer == null || status == null || user == null || service == null)
+            return false;
+
+        //If all data in ProjectRegistrationForm is valid, then return true
+        return true;
+    }
+
+    private async Task<bool> IsValidForUpdate(ProjectUpdateForm form)
+    {
+        //Check that ProjecUpdateForm is not null
+        if (form == null) return false;
+
+        //Title can not be null
+        if (string.IsNullOrWhiteSpace(form.Title)) return false;
+
+        //StartDate can not be null; if not selected in drop down then it´s value is null here
+        //End Date is allowed to be null, i.e. not selected
+        if (form.StartDate == null) return false;
+
+        //Check if Foreign Keys exist in database
+        var customer = await customerService.GetCustomerEntityAsync(x => x.Id == form.CustomerId);
+        var status = await statusTypeService.GetStatusTypeEntityAsync(x => x.Id == form.StatusId);
+        var user = await userService.GetUserEntityAsync(x => x.Id == form.UserId);
+        var service = await serviceService.GetServiceEntityAsync(x => x.Id == form.ServiceId);
+
+        //If any of the Foreign Keys do not exist in db, then Project can not be updated
+        if (customer == null || status == null || user == null || service == null)
+            return false;
+
+        //If all data in ProjectUpdateForm is valid, then return true
+        return true;
+    }
+
+    // READ
+    //TO DO: Change name of method
+    public async Task<IEnumerable<Project>> GetAllProjectsAsyncWithQuery()
+    {
+        //TO DO: Change name of method
+        var entities = await _projectRepository.GetAllAsyncWithQuery(query =>
+            query.Include(c => c.Customer)
+                .Include(s => s.Status)
+                .Include(u => u.User)
+                .Include(se => se.Service)
+        );
+
         var projects = entities.Select(ProjectFactory.Create).ToList();
         return projects != null && projects.Any() ? projects : [];
     }
 
-    //Inför Try - Catch här
-    // UPDATE  
-    public async Task<Project?> UpdateProjectAsync(int Id, ProjectUpdateForm updateForm)
+    /*
+    public async Task<IEnumerable<Project>> GetAllProjectsAsync()
     {
-        var existingProject = await GetProjectEntityAsync(x => x.Id == Id);
-        if (existingProject == null)
-            return null;
+        //The include statements are in ProjectRepository
+        var entities = await _projectRepository.GetAllAsync();
+        var projects = entities.Select(ProjectFactory.Create).ToList();
+        return projects != null && projects.Any() ? projects : [];
+    }
+    */
 
-        //ev. TO DO - alt. för att flytta ut all den här koden från ProjectServic
-        //existingProject = ProjectFactory(existingProject, updateForm)
-
-        existingProject.Title = string.IsNullOrWhiteSpace(updateForm.Title) ? existingProject.Title : updateForm.Title;
-        existingProject.Description = updateForm.Description;  //Description can be updated to null or empty
-
-        if (existingProject.StartDate != updateForm.StartDate) existingProject.StartDate = Convert.ToDateTime(updateForm.StartDate);
-        if (existingProject.EndDate != updateForm.EndDate) existingProject.EndDate = Convert.ToDateTime(updateForm.EndDate);
-
-        if (existingProject.CustomerId != updateForm.CustomerId  && updateForm.CustomerId != 0) 
-            existingProject.CustomerId = updateForm.CustomerId;
-        if (existingProject.StatusId != updateForm.StatusId && updateForm.StatusId != 0) 
-            existingProject.StatusId = updateForm.StatusId;
-        if (existingProject.UserId != updateForm.UserId && updateForm.UserId != 0) 
-            existingProject.UserId = updateForm.UserId;
-        if (existingProject.ServiceId != updateForm.ServiceId && updateForm.ServiceId != 0) 
-            existingProject.ServiceId = updateForm.ServiceId;
-
-        //TO DO: Test the conversion OR remove Total property
-        //if (existingProject.Total != form.Total) existingProject.Total = (decimal)form.Total!;   
-
-        var result = await _projectRepository.UpdateAsync(x => x.Id == Id, existingProject);
-       
-        return (result != null) ? ProjectFactory.Create(existingProject) : null;
+    public async Task<Project?> GetProjectAsync(Expression<Func<ProjectEntity, bool>> expression)
+    {
+        //TO DO: Change name of method
+        var entity = await _projectRepository.GetAsyncWithQuery(expression, query =>
+            query.Include(c => c.Customer)
+                .Include(s => s.Status)
+                .Include(u => u.User)
+                .Include(se => se.Service)
+        );
+        var project = ProjectFactory.Create(entity);
+        return project != null ? project : null;
     }
 
-    //Inför Try - Catch här
+    public async Task<Project?> GetProjectByIdAsync(int projectId)
+    {
+        //TO DO: Change name of method
+        var entity = await _projectRepository.GetAsyncWithQuery(x => x.Id == projectId, query =>
+            query.Include(c => c.Customer)
+                .Include(s => s.Status)
+                .Include(u => u.User)
+                .Include(se => se.Service)
+        );
+        var project = ProjectFactory.Create(entity);
+        return project != null ? project : null;
+    }
+
+    // UPDATE  
+    public async Task<bool> UpdateProjectAsync(int projectId, ProjectUpdateForm updateForm)
+    {
+        //If existingProject does not exist in db, then do not proceed with Update
+        var existingProject = await GetProjectEntityAsync(x => x.Id == projectId);
+        if (existingProject == null)
+            return false;
+
+        //Validation of input data, including controls that Foreign Keys exist in database
+        if (!await IsValidForUpdate(updateForm)) return false;
+
+        //Map updateForm to existingProject
+        existingProject = ProjectFactory.MapForUpdate(existingProject, updateForm);
+
+        //Transaction Management
+        await _projectRepository.BeginTransactionAsync();
+        try
+        {
+            _projectRepository.Update(existingProject);
+            await _projectRepository.SaveAsync();
+            await _projectRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error updating a Project :: {ex.Message}");
+            await _projectRepository.RollbackTransactionAsync();
+            return false;
+        }
+
+        // OLD UpdateProjectAsync
+        //var result = await _projectRepository.UpdateAsync(x => x.Id == Id, existingProject);
+        //return (result != null) ? ProjectFactory.Create(existingProject) : null;
+    }
+
     // DELETE
     public async Task<bool> DeleteProjectByIdAsync(int Id)
     {
-        //Den här kontrollen görs också i BaseRepository  ***
-        var project = await GetProjectEntityAsync(x => x.Id == Id);
-        if (project == null)
+        //If existingProject does not exist in db, then do not proceed with Delete
+        var projectEntity = await GetProjectEntityAsync(x => x.Id == Id);
+        if (projectEntity == null)
             return false;
 
-        var result = await _projectRepository.DeleteAsync(x => x.Id == Id);
-        return result;
+        //Transaction Management
+        await _projectRepository.BeginTransactionAsync();
+        try
+        {
+            _projectRepository.Remove(projectEntity);
+            await _projectRepository.SaveAsync();
+            await _projectRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error deleting a Project :: {ex.Message}");
+            await _projectRepository.RollbackTransactionAsync();
+            return false;
+        }
+
+        //OLD DeleteProjectAsync
+        //var result = await _projectRepository.DeleteAsync(x => x.Id == Id);
+        //return result;
     }
 
-    //Inför Try - Catch här (enbart om metoden görs om till public, om den förblir private så behövs det inte).
     private async Task<ProjectEntity?> GetProjectEntityAsync(Expression<Func<ProjectEntity, bool>> expression)
     {
-        var project = await _projectRepository.GetAsync(expression);
+        //TO DO: Change name of method
+        var project = await _projectRepository.GetAsyncWithQuery(expression);
         return project;
     }
 }

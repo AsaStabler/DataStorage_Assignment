@@ -23,10 +23,13 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Headline, FallbackValue='Project Details'}" Style="{StaticResource HeadlineText}" />
 
             <StackPanel Grid.Row="1"  Margin="0 15 0 0">
-                <TextBlock Text="Title" Style="{StaticResource LabelText}" />
+                <TextBlock Text="Project Id" Style="{StaticResource LabelText}" />
+                <TextBox Text="{Binding Project.Id}" Style="{StaticResource InputText}" IsReadOnly="True"/>
+
+                <TextBlock Text="Project Title" Style="{StaticResource LabelText}" />
                 <TextBox Text="{Binding Project.Title}" Style="{StaticResource InputText}" IsReadOnly="True"/>
 
-                <TextBlock Text="Description" Style="{StaticResource LabelText}" />
+                <TextBlock Text="Project Description" Style="{StaticResource LabelText}" />
                 <TextBox Text="{Binding Project.Description}" Style="{StaticResource InputText}" IsReadOnly="True"/>
 
                 <TextBlock Text="Start Date" Style="{StaticResource LabelText}" />
@@ -35,7 +38,15 @@
                 <TextBlock Text="End Date" Style="{StaticResource LabelText}" />
                 <DatePicker SelectedDate="{Binding Project.EndDate}" IsEnabled="False"/>
 
-                <TextBlock Text="Customer" Style="{StaticResource LabelText}" />
+                <TextBlock Text="Project Status" />
+                <ComboBox Name="StatusComboBox"  
+                          ItemsSource="{Binding StatusTypes}"
+                          SelectedItem="{Binding Path=SelectedStatusType, Mode=TwoWay}"
+                          DisplayMemberPath="StatusName" 
+                          SelectedValuePath="Id"
+                          IsEnabled="False"/>
+
+                <TextBlock Text="Project Customer" Style="{StaticResource LabelText}" />
                 <ComboBox Name="CustomersComboBox"  
                           ItemsSource="{Binding Customers}"
                           SelectedItem="{Binding Path=SelectedCustomer, Mode=TwoWay}"
@@ -43,11 +54,22 @@
                           SelectedValuePath="Id"
                           IsEnabled="False"/>
 
-                <!--TextBlock Text="Postal code" Style="{StaticResource LabelText}" />
-                <TextBox Text="{Binding Contact.PostalCode}" Style="{StaticResource InputText}" />
+                <TextBlock Text="Project Leader" />
+                <ComboBox Name="UsersComboBox"  
+                      ItemsSource="{Binding Users}"
+                      SelectedItem="{Binding Path=SelectedUser, Mode=TwoWay}"
+                      DisplayMemberPath="LastName" 
+                      SelectedValuePath="Id"
+                      IsEnabled="False"/>
 
-                <TextBlock Text="City" Style="{StaticResource LabelText}" />
-                <TextBox Text="{Binding Contact.City}" Style="{StaticResource InputText}" /-->
+                <TextBlock Text="Type of Service" />
+                <ComboBox Name="ServicesComboBox"  
+                      ItemsSource="{Binding Services}"
+                      SelectedItem="{Binding Path=SelectedService, Mode=TwoWay}"
+                      DisplayMemberPath="ServiceName" 
+                      SelectedValuePath="Id"
+                      IsEnabled="False"/>
+
             </StackPanel>
 
             <StackPanel Grid.Row="2">

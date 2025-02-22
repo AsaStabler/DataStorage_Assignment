@@ -25,30 +25,16 @@ public partial class ProjectsViewModel : ObservableObject
 
         //Populates the Project list from the database
         Task.Run(GetProjectsAsync);
-        
-        //_projects = new ObservableCollection<Project>( await _projectService.GetAllProjectsAsync());
-        //_projects = testMethod();
     }
 
     public async Task GetProjectsAsync() 
-    { 
-        var tempProjects = await _projectService.GetAllProjectsAsync();
+    {
+        //IEnumerable<Project> testProjectsList = [];
+        //testProjectsList = await _projectService.GetAllProjectsAsyncWithQuery();
+
+        //TO DO: Ändra namn på metoden
+        var tempProjects = await _projectService.GetAllProjectsAsyncWithQuery();
         Projects = new ObservableCollection<Project>(tempProjects);
-
-
-        //Alt 1
-        //IEnumerable<Project> _projectsTest = await _projectService.GetAllProjectsAsync();
-        
-        //Alt 1a
-        //_projectsTest = new ObservableCollection<Project>(_projectsTest);
-        //Alt 1a
-        //ObservableCollection<Project> _projectsTest2 = new ObservableCollection<Project>(_projectsTest);
-
-        //Alt 2
-        //ObservableCollection<Project> _projectsTest3 = [];
-        //_projectsTest3 = new ObservableCollection<Project>( await _projectService.GetAllProjectsAsync());
-
-        //return _projectsTest3;
     }
 
     [RelayCommand]
