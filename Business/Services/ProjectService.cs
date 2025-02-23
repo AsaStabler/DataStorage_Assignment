@@ -103,16 +103,24 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
     //TO DO: Change name of method
     public async Task<IEnumerable<Project>> GetAllProjectsAsyncWithQuery()
     {
-        //TO DO: Change name of method
-        var entities = await _projectRepository.GetAllAsyncWithQuery(query =>
-            query.Include(c => c.Customer)
-                .Include(s => s.Status)
-                .Include(u => u.User)
-                .Include(se => se.Service)
-        );
+        try
+        {
+            //TO DO: Change name of method
+            var entities = await _projectRepository.GetAllAsyncWithQuery(query =>
+                query.Include(c => c.Customer)
+                    .Include(s => s.Status)
+                    .Include(u => u.User)
+                    .Include(se => se.Service)
+            );
 
-        var projects = entities.Select(ProjectFactory.Create).ToList();
-        return projects != null && projects.Any() ? projects : [];
+            var projects = entities.Select(ProjectFactory.Create).ToList();
+            return projects != null && projects.Any() ? projects : [];
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting all Projects :: {ex.Message}");
+            return [];
+        }
     }
 
     /*
@@ -127,28 +135,45 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
 
     public async Task<Project?> GetProjectAsync(Expression<Func<ProjectEntity, bool>> expression)
     {
-        //TO DO: Change name of method
-        var entity = await _projectRepository.GetAsyncWithQuery(expression, query =>
+        try
+        {
+            //TO DO: Change name of method
+            var entity = await _projectRepository.GetAsyncWithQuery(expression, query =>
             query.Include(c => c.Customer)
                 .Include(s => s.Status)
                 .Include(u => u.User)
                 .Include(se => se.Service)
-        );
-        var project = ProjectFactory.Create(entity);
-        return project != null ? project : null;
+            );
+
+            var project = ProjectFactory.Create(entity!);
+            return project != null ? project : null;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting one Project :: {ex.Message}");
+            return null;
+        }
     }
 
     public async Task<Project?> GetProjectByIdAsync(int projectId)
     {
         //TO DO: Change name of method
-        var entity = await _projectRepository.GetAsyncWithQuery(x => x.Id == projectId, query =>
+        try
+        {
+            var entity = await _projectRepository.GetAsyncWithQuery(x => x.Id == projectId, query =>
             query.Include(c => c.Customer)
                 .Include(s => s.Status)
                 .Include(u => u.User)
                 .Include(se => se.Service)
-        );
-        var project = ProjectFactory.Create(entity);
-        return project != null ? project : null;
+            );
+            var project = ProjectFactory.Create(entity!);
+            return project != null ? project : null;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting one Project :: {ex.Message}");
+            return null;
+        }
     }
 
     // UPDATE  
@@ -218,7 +243,16 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
     private async Task<ProjectEntity?> GetProjectEntityAsync(Expression<Func<ProjectEntity, bool>> expression)
     {
         //TO DO: Change name of method
-        var project = await _projectRepository.GetAsyncWithQuery(expression);
-        return project;
+        try
+        {
+            //var project = await _projectRepository.GetAsyncWithQuery(expression);
+            var project = await _projectRepository.GetAsync(expression);  //Testing!!!
+            return project;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting one ProjectEntity :: {ex.Message}");
+            return null;
+        }
     }
 }

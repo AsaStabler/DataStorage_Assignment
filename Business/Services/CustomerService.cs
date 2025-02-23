@@ -4,6 +4,7 @@ using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Business.Services;
@@ -12,17 +13,26 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
 {
     private readonly ICustomerRepository _customerRepository = customerRepository;
 
-    //Does not Inlude Project list
+    //Does not Include Project list in the returned Customers
+    //Method is used to populate ComboBox - Project list not needed
     public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
     {
-        //TO DO: Change name of method
-        //No need to do .Include on Projects here (Customers list will be used in ComboBox)
-        var entities = await _customerRepository.GetAllAsyncWithQuery();
-        var customers = entities.Select(CustomerFactory.Create).ToList();
-        return customers != null && customers.Any() ? customers : [];
+        try 
+        { 
+            //TO DO: Change name of method
+            //var entities = await _customerRepository.GetAllAsyncWithQuery();
+            var entities = await _customerRepository.GetAllAsync();  //Testing!!!
+            var customers = entities.Select(CustomerFactory.Create).ToList();
+            return customers != null && customers.Any() ? customers : [];
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting all Customers :: {ex.Message}");
+            return [];
+        }
     }
 
-    /* Original version - before impl Queryable in BaseRepository
+    /* OLD version - before impl Queryable in BaseRepository
     public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
     {
         var entities = await _customerRepository.GetAllAsync();
@@ -31,25 +41,41 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
     }
     */
 
-    //Inludes Project list
+    //Includes Project list in returned Customer
     public async Task<Customer?> GetCustomerAsync(Expression<Func<CustomerEntity, bool>> expression)
     {
-        //TO DO: Change name of method
-        //Inludes Project list 
-        var entity = await _customerRepository.GetAsyncWithQuery(expression, query =>
+        try
+        {
+            //TO DO: Change name of method
+            var entity = await _customerRepository.GetAsyncWithQuery(expression, query =>
             query.Include(x => x.Projects)
             );
-      
-        var customer = CustomerFactory.Create(entity);
-        return customer != null ? customer : null;
+
+            var customer = CustomerFactory.Create(entity!);
+            return customer != null ? customer : null;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting one Customer :: {ex.Message}");
+            return null;
+        }
+
     }
 
-    //Does not Inlude Project list
+    //Does not Include Project list in returned CustomerEntity
     public async Task<CustomerEntity?> GetCustomerEntityAsync(Expression<Func<CustomerEntity, bool>> expression)
     {
-        //TO DO: Change name of method
-        //Does not Inlude Project list 
-        var customer = await _customerRepository.GetAsyncWithQuery(expression);
-        return customer;
+        try
+        {
+            //TO DO: Change name of method
+            //var customer = await _customerRepository.GetAsyncWithQuery(expression);
+            var customer = await _customerRepository.GetAsync(expression);   //Testing!!!
+            return customer;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting one CustomerEntity :: {ex.Message}");
+            return null;
+        }
     }
 }

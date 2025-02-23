@@ -1,19 +1,21 @@
 ﻿using Data.Contexts;
 using Data.Entities;
 using Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Data.Repositories;
 
 public class CustomerRepository(DataContext context) : BaseRepository<CustomerEntity>(context), ICustomerRepository
 {
-    /*
+    
     public override async Task<IEnumerable<CustomerEntity>> GetAllAsync()
     {
         try
         {
-            var entities = await _context.Customers
-                .Include(x => x.Projects)
-                .ToListAsync();
+            var entities = await _context.Customers.ToListAsync();
+            // .Include(x => x.Projects)
+            // .ToListAsync();
             return entities;
         }
         catch (Exception ex)
@@ -22,7 +24,7 @@ public class CustomerRepository(DataContext context) : BaseRepository<CustomerEn
             return [];
         }
     }
-    */
+    
 
     /*
     public override async Task<CustomerEntity> GetAsync(Expression<Func<CustomerEntity, bool>> expression)

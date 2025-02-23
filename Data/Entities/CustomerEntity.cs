@@ -9,5 +9,5 @@ public class CustomerEntity
     public string CustomerName { get; set; } = null!;
     public string CustomerEmail { get; set; } = null!;
     public string CustomerPhone { get; set; } = null!;
-    public ICollection<ProjectEntity> Projects { get; set; } = [];
+    public virtual ICollection<ProjectEntity> Projects { get; set; } = [];
 }

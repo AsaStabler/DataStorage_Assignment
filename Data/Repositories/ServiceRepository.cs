@@ -27,6 +27,7 @@ public class ServiceRepository(DataContext context) : BaseRepository<ServiceEnti
     }
     */
 
+    /*
     public override async Task<ServiceEntity> GetAsync(Expression<Func<ServiceEntity, bool>> expression)
     {
         if (expression == null)
@@ -45,4 +46,5 @@ public class ServiceRepository(DataContext context) : BaseRepository<ServiceEnti
             return null!;
         }
     }
+    */
 }

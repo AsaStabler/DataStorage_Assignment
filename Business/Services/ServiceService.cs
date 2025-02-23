@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Business.Services;
@@ -11,22 +12,37 @@ public class ServiceService(IServiceRepository serviceRepository) : IServiceServ
 {
     private readonly IServiceRepository _serviceRepository = serviceRepository;
 
-    //Does not Inlude Project list
+    //Does not Include Project list in the returned Services
+    //Method is used to populate ComboBox - Project list not needed
     public async Task<IEnumerable<Service>> GetAllServicesAsync()
     {
-        //TO DO: Change name of method
-        //No need to do .Include on Projects here (Services list will be used in ComboBox)
-        var entities = await _serviceRepository.GetAllAsyncWithQuery();
-        var services = entities.Select(ServiceFactory.Create).ToList();
-        return services != null && services.Any() ? services : [];
+        try
+        {
+            //TO DO: Change name of method
+            var entities = await _serviceRepository.GetAllAsyncWithQuery();
+            var services = entities.Select(ServiceFactory.Create).ToList();
+            return services != null && services.Any() ? services : [];
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting all Services :: {ex.Message}");
+            return [];
+        }
     }
 
-    //Does not Inlude Project list
+    //Does not Include Project list in returned ServiceEntity
     public async Task<ServiceEntity?> GetServiceEntityAsync(Expression<Func<ServiceEntity, bool>> expression)
     {
-        //TO DO: Change name of method
-        //Does not Inlude Project list 
-        var service = await _serviceRepository.GetAsyncWithQuery(expression);
-        return service;
+        try
+        { 
+            //TO DO: Change name of method
+            var service = await _serviceRepository.GetAsyncWithQuery(expression);
+            return service;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error getting one ServiceEntity :: {ex.Message}");
+            return null;
+        }
     }
 }

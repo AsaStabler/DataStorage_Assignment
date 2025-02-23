@@ -9,5 +9,5 @@ public class ServiceEntity
     public string ServiceName { get; set; } = null!;
     public decimal Price { get; set; }
 
-    public ICollection<ProjectEntity> Projects { get; set; } = [];
+    public virtual ICollection<ProjectEntity> Projects { get; set; } = [];
 }
