@@ -12,15 +12,12 @@ public class UserService(IUserRepository userRepository) : IUserService
 {
     private readonly IUserRepository _userRepository = userRepository;
 
-    //Does not Include Project list in the returned Users
-    //Method is used to populate ComboBox - Project list not needed
+    //Without Eager Loading (use method to populate ComboBoxes)
     public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
         try
         { 
-            //TO DO: Change name of method
-            //No need to do .Include on Projects here (Users list will be used in ComboBox)
-            var entities = await _userRepository.GetAllAsyncWithQuery();
+            var entities = await _userRepository.GetAllAsync();
             var users = entities.Select(UserFactory.Create).ToList();
             return users != null && users.Any() ? users : [];
         }
@@ -31,14 +28,12 @@ public class UserService(IUserRepository userRepository) : IUserService
         }
     }
 
-    //Does not Include Project list in returned UserEntity
+    //Without Eager Loading
     public async Task<UserEntity?> GetUserEntityAsync(Expression<Func<UserEntity, bool>> expression)
     {
         try
         {
-            //TO DO: Change name of method
-            //Does not Inlude Project list 
-            var user = await _userRepository.GetAsyncWithQuery(expression);
+            var user = await _userRepository.GetAsync(expression);
             return user;
         }
         catch (Exception ex)

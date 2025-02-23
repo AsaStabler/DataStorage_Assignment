@@ -39,12 +39,6 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
         } 
         else 
             return false;
-
-        // OLD CreateProjectAsync
-        //NOTE! BaseRepository.CreateAsync returnerar det skapade objektet, inte true-false
-        //var result = await _projectRepository.CreateAsync(ProjectFactory.Create(form));
-        //return result;
-        //return true;   //Ska ändras!!!
     }
 
     private async Task<bool> IsValid(ProjectRegistrationForm form)
@@ -100,13 +94,12 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
     }
 
     // READ
-    //TO DO: Change name of method
-    public async Task<IEnumerable<Project>> GetAllProjectsAsyncWithQuery()
+    //With Eager Loading
+    public async Task<IEnumerable<Project>> GetAllProjectsAsync()
     {
         try
         {
-            //TO DO: Change name of method
-            var entities = await _projectRepository.GetAllAsyncWithQuery(query =>
+            var entities = await _projectRepository.GetAllAsync(query =>
                 query.Include(c => c.Customer)
                     .Include(s => s.Status)
                     .Include(u => u.User)
@@ -123,22 +116,12 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
         }
     }
 
-    /*
-    public async Task<IEnumerable<Project>> GetAllProjectsAsync()
-    {
-        //The include statements are in ProjectRepository
-        var entities = await _projectRepository.GetAllAsync();
-        var projects = entities.Select(ProjectFactory.Create).ToList();
-        return projects != null && projects.Any() ? projects : [];
-    }
-    */
-
+    //With Eager Loading
     public async Task<Project?> GetProjectAsync(Expression<Func<ProjectEntity, bool>> expression)
     {
         try
         {
-            //TO DO: Change name of method
-            var entity = await _projectRepository.GetAsyncWithQuery(expression, query =>
+            var entity = await _projectRepository.GetAsync(expression, query =>
             query.Include(c => c.Customer)
                 .Include(s => s.Status)
                 .Include(u => u.User)
@@ -155,12 +138,12 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
         }
     }
 
+    //With Eager Loading
     public async Task<Project?> GetProjectByIdAsync(int projectId)
     {
-        //TO DO: Change name of method
         try
         {
-            var entity = await _projectRepository.GetAsyncWithQuery(x => x.Id == projectId, query =>
+            var entity = await _projectRepository.GetAsync(x => x.Id == projectId, query =>
             query.Include(c => c.Customer)
                 .Include(s => s.Status)
                 .Include(u => u.User)
@@ -188,7 +171,7 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
         if (!await IsValidForUpdate(updateForm)) return false;
 
         //Map updateForm to existingProject
-        existingProject = ProjectFactory.MapForUpdate(existingProject, updateForm);
+        existingProject = ProjectFactory.Create(existingProject, updateForm);
 
         //Transaction Management
         await _projectRepository.BeginTransactionAsync();
@@ -205,10 +188,6 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
             await _projectRepository.RollbackTransactionAsync();
             return false;
         }
-
-        // OLD UpdateProjectAsync
-        //var result = await _projectRepository.UpdateAsync(x => x.Id == Id, existingProject);
-        //return (result != null) ? ProjectFactory.Create(existingProject) : null;
     }
 
     // DELETE
@@ -234,19 +213,14 @@ public class ProjectService(IProjectRepository projectRepository, ICustomerServi
             await _projectRepository.RollbackTransactionAsync();
             return false;
         }
-
-        //OLD DeleteProjectAsync
-        //var result = await _projectRepository.DeleteAsync(x => x.Id == Id);
-        //return result;
     }
 
+    //Without Eager Loading
     private async Task<ProjectEntity?> GetProjectEntityAsync(Expression<Func<ProjectEntity, bool>> expression)
     {
-        //TO DO: Change name of method
         try
         {
-            //var project = await _projectRepository.GetAsyncWithQuery(expression);
-            var project = await _projectRepository.GetAsync(expression);  //Testing!!!
+            var project = await _projectRepository.GetAsync(expression); 
             return project;
         }
         catch (Exception ex)

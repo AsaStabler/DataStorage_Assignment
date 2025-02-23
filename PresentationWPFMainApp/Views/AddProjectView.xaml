@@ -11,62 +11,69 @@
              mc:Ignorable="d" 
              Background="White"
              d:DesignHeight="700" d:DesignWidth="400">
-    <Grid Margin="15">
+    
+    <Border Background="CadetBlue" CornerRadius="0 0 25 25">
+        <Grid Margin="40 5 40 30">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Title}" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Headline, FallbackValue='New Project'}" Style="{StaticResource HeadlineText}" />
 
-        <StackPanel  Grid.Row="1" Margin="0 15 0 0">
-            <TextBlock Text="Project Title" />
-            <TextBox Text="{Binding Project.Title}" />
+            <StackPanel  Grid.Row="1" Margin="0 15 0 0">
+                <TextBlock Text="* Project Title" Style="{StaticResource LabelText}" />
+                <TextBox Text="{Binding Project.Title}" Style="{StaticResource InputText}" />
 
-            <TextBlock Text="Project Description" />
-            <TextBox Text="{Binding Project.Description}" />
+                <TextBlock Text="  Project Description" Style="{StaticResource LabelText}" />
+                <TextBox Text="{Binding Project.Description}" Style="{StaticResource InputText}" />
 
-            <TextBlock Text="Start Date" />
-            <DatePicker SelectedDate="{Binding Project.StartDate}" />
+                <TextBlock Text="* Start Date" Style="{StaticResource LabelText}" />
+                <DatePicker SelectedDate="{Binding Project.StartDate}" />
 
-            <TextBlock Text="End Date" />
-            <DatePicker SelectedDate="{Binding Project.EndDate}" />
+                <TextBlock Text="End Date" Style="{StaticResource LabelText}" />
+                <DatePicker SelectedDate="{Binding Project.EndDate}" />
 
-            <TextBlock Text="Project Status (select)" />
-            <ComboBox Name="StatusComboBox"  
-                     ItemsSource="{Binding StatusTypes}"
-                     SelectedItem="{Binding Path=SelectedStatusType, Mode=TwoWay}"
-                     DisplayMemberPath="StatusName" 
-                     SelectedValuePath="Id"/>
+                <TextBlock Text="* Project Status (select)" Style="{StaticResource LabelText}" />
+                <ComboBox Name="StatusComboBox"  
+                         ItemsSource="{Binding StatusTypes}"
+                         SelectedItem="{Binding Path=SelectedStatusType, Mode=TwoWay}"
+                         DisplayMemberPath="StatusName" 
+                         SelectedValuePath="Id"/>
 
-            <TextBlock Text="Project Customer (select)" />
-            <ComboBox Name="CustomersComboBox"  
-                      ItemsSource="{Binding Customers}"
-                      SelectedItem="{Binding Path=SelectedCustomer, Mode=TwoWay}"
-                      DisplayMemberPath="CustomerName" 
-                      SelectedValuePath="Id"/>
+                <TextBlock Text="* Project Customer (select)" Style="{StaticResource LabelText}" />
+                <ComboBox Name="CustomersComboBox"  
+                          ItemsSource="{Binding Customers}"
+                          SelectedItem="{Binding Path=SelectedCustomer, Mode=TwoWay}"
+                          DisplayMemberPath="CustomerName" 
+                          SelectedValuePath="Id"/>
 
-            <TextBlock Text="Project Leader (select)" />
-            <ComboBox Name="UsersComboBox"  
-                      ItemsSource="{Binding Users}"
-                      SelectedItem="{Binding Path=SelectedUser, Mode=TwoWay}"
-                      DisplayMemberPath="LastName" 
-                      SelectedValuePath="Id"/>
-            
-            <TextBlock Text="Type of Service (select)" />
-            <ComboBox Name="ServicesComboBox"  
-                      ItemsSource="{Binding Services}"
-                      SelectedItem="{Binding Path=SelectedService, Mode=TwoWay}"
-                      DisplayMemberPath="ServiceName" 
-                      SelectedValuePath="Id"/>
-        </StackPanel>
+                <TextBlock Text="* Project Leader (select)" Style="{StaticResource LabelText}" />
+                <ComboBox Name="UsersComboBox"  
+                          ItemsSource="{Binding Users}"
+                          SelectedItem="{Binding Path=SelectedUser, Mode=TwoWay}"
+                          DisplayMemberPath="UserDisplayName" 
+                          SelectedValuePath="Id"/>
 
-        <StackPanel Grid.Row="2">
-            <Button Content="Save Project" Command="{Binding SaveCommand}" Padding="8" Margin="60 10 60 0" />
-            <Button Content="Cancel" Command="{Binding CancelCommand}" Padding="8"  Margin="60 10 60 0" />
-        </StackPanel>
+                <TextBlock Text="* Type of Service (select)" Style="{StaticResource LabelText}" />
+                <ComboBox Name="ServicesComboBox"  
+                          ItemsSource="{Binding Services}"
+                          SelectedItem="{Binding Path=SelectedService, Mode=TwoWay}"
+                          DisplayMemberPath="ServiceDescription" 
+                          SelectedValuePath="Id"/>
+                <TextBlock />
+                <TextBlock />
+                <TextBlock Text="{Binding ErrorMsg}" FontSize="15" FontWeight="Bold" TextAlignment="Center" />
 
-    </Grid>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2">
+                <Button Content="Save Project" Command="{Binding SaveCommand}" Style="{StaticResource StandardButton}" Margin="60 10 60 0" />
+                <Button Content="Cancel" Command="{Binding CancelCommand}" Style="{StaticResource StandardButton}" Margin="60 10 60 0" />
+            </StackPanel>
+
+        </Grid>
+    </Border>
 </UserControl>

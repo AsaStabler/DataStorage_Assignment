@@ -11,64 +11,67 @@
              mc:Ignorable="d" 
              Background="White"
              d:DesignHeight="700" d:DesignWidth="400">
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    
+    <Border Background="CadetBlue" CornerRadius="0 0 25 25">
+        <Grid Margin="40 5 40 40">
 
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Text="Project List" FontSize="20" FontWeight="Bold" />
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Command="{Binding GoToAddProjectCommand}"  Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Padding="7 0" />
+                <TextBlock Grid.Column="0" Text="{Binding Headline, FallbackValue='Project List'}" Style="{StaticResource HeadlineText}" />
+
+                <Button Grid.Column="1" Command="{Binding GoToAddProjectCommand}"  Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Padding="7 0" Margin="0 5 0 20" />
+            </Grid>
+
+            <ListView Grid.Row="1" ItemsSource="{Binding Projects}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch" >
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="models:Project">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>
+                                     <Run Text="Project: P-"/><Run Text="{Binding Id}"/><Run Text=", "/><Run Text="{Binding Title}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                     <Run Text="Start Date: "/><Run Text="{Binding DisplayStartDate}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                     <Run Text="End Date: "/><Run Text="{Binding DisplayEndDate}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                     <Run Text="Status: "/><Run Text="{Binding StatusName}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                     <Run Text="Customer: "/><Run Text="{Binding CustomerName}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                     <Run Text="Project Leader: "/><Run Text="{Binding UserDisplayName}"/>
+                                </TextBlock>
+                                <TextBlock>
+                                     <Run Text="Service: "/><Run Text="{Binding ServiceDescription}"/>
+                                </TextBlock>
+                                <TextBlock />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1"  Orientation="Horizontal">
+                                <Button CommandParameter="{Binding .}" Command="{Binding DataContext.GoToDetailsProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"  Content="&#xE712;" FontFamily="Segoe MDL2 Assets"  Margin="0 0 0 100" Padding="7 0" Background="Transparent" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
-
-        <ListView Grid.Row="1" ItemsSource="{Binding Projects}" Margin="0 20 0 0" HorizontalContentAlignment="Stretch" >
-            <ListView.ItemTemplate>
-                <DataTemplate DataType="models:Project">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="{Binding Id}" />
-                            <TextBlock Text="{Binding Title}" />
-                            <TextBlock Text="{Binding StartDate}" FontSize="10" />
-                            <TextBlock Text="{Binding EndDate}" FontSize="10" />
-                            <TextBlock Text="{Binding StatusName}" FontSize="10" />
-                            <TextBlock />
-
-                            <!--TextBlock > <LineBreak /> </TextBlock-->
-
-                            <!--TextBlock Foreground="#333333">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0} {1} {2} {3} {4}">
-                                        <Binding Path="Id" />
-                                        <Binding Path="Title" />
-                                        <Binding Path="StartDate" />
-                                        <Binding Path="EndDate" />
-                                        <Binding Path="StatusName" />
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                                <LineBreak />
-                            </TextBlock-->
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1"  Orientation="Horizontal">
-                            <!--Button Command="{Binding GoToAddProjectCommand}" Content="&#xE712;" FontFamily="Segoe MDL2 Assets" Padding="7 0" Background="Transparent"   /-->
-                            <Button CommandParameter="{Binding .}" Command="{Binding DataContext.GoToDetailsProjectCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"  Content="&#xE712;" FontFamily="Segoe MDL2 Assets"  Margin="0 0 0 55" Padding="7 0" Background="Transparent" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>
-
+    </Border>
 </UserControl>

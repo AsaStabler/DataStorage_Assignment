@@ -11,9 +11,3 @@ public class ProjectRegistrationForm
     public int UserId { get; set; }         
     public int ServiceId { get; set; }      
 }
-
-//Om man inte sätter "nullable", dvs DateTime?, så initieras DateTime till 0001-01-01
-//och då visas detta datum istället för "Select a date" i DatePicker i WPF
-
-//Man kan bara sätta DateTime? (inte null!) för DateTime. Då initieras den till null.
-

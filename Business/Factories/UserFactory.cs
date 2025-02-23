@@ -13,6 +13,7 @@ public static class UserFactory
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             Email = entity.Email,
+            UserDisplayName = entity.FirstName + " " + entity.LastName,
         };
     }
 }

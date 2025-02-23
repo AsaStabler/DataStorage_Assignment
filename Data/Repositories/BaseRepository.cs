@@ -73,7 +73,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
     }
 
     // READ - Get All
-    public virtual async Task<IEnumerable<TEntity>> GetAllAsyncWithQuery(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeExpression = null) 
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeExpression = null) 
     {
         IQueryable<TEntity> query = _dbSet;
 
@@ -93,7 +93,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
     }
 
     // READ - Get One
-    public virtual async Task<TEntity?> GetAsyncWithQuery(Expression<Func<TEntity, bool>> expression, Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeExpression = null) 
+    public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> expression, Func<IQueryable<TEntity>, IQueryable<TEntity>>? includeExpression = null) 
     {
         if (expression == null)
             return null!;
@@ -102,6 +102,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
 
         if (includeExpression != null)
             query = includeExpression(query);
+
         try
         { 
             var entity = await query.FirstOrDefaultAsync(expression);
@@ -110,7 +111,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
         catch (Exception ex)
         {
             Debug.WriteLine($"Error getting one {nameof(TEntity)} entity :: {ex.Message}");
-            return null!;
+            return null;
         }
     }
 
@@ -127,48 +128,13 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
         }
     }
 
-    //OLD Get All - w/o Queryable
-    public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
-    {
-        try
-        {
-            var entities = await _dbSet.ToListAsync();
-            return entities;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error getting all {nameof(TEntity)} entities :: {ex.Message}");
-            return [];
-        }
-    }
-
-    //OLD Get One - w/o Queryable
-    public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
-    //public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> expression)
-    {
-        if (expression == null)
-            return null!;
-
-        try
-        {
-            var entity = await _dbSet.FirstOrDefaultAsync(expression);
-            return entity!;
-            //return entity;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error getting one {nameof(TEntity)} entity :: {ex.Message}");
-            return null!;
-        }
-    }
-
     #endregion
 
     #region OLD CRUD - Without Transaction Management
 
     // OLD CREATE - W/O Transaction Management
     /*
-    public virtual async Task<TEntity> CreateAsync(TEntity entity)  //Ev returnera bool istället
+    public virtual async Task<TEntity> CreateAsync(TEntity entity) 
     {
         if (entity == null)
             return null!;
@@ -201,7 +167,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             if (existingEntity == null)
                 return null!;
 
-            //_dbSet.Update(entity);  KAN TA BORT
+            //_dbSet.Update(entity); 
             _context.Entry(existingEntity).CurrentValues.SetValues(updateEntity);
             await _context.SaveChangesAsync();
             return existingEntity;
@@ -214,32 +180,29 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
     }
     */
 
-    // OLD DELETE - W/O Transaction Management
-    // *** NOTE: Exempel på hur göra delete med input parameter av HELT OBJEKT (inte expression) ***
-    //public virtual async Task<bool> RemoveAsync(TEntity entity) //Tors 30/1
-    /*
-    public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
-    {
-        if (expression == null)
-            return false;
+   /*
+   // OLD DELETE - W/O Transaction Management
+   public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
+   {
+       if (expression == null)
+           return false;
 
-        try
-        {
-            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
-            if (existingEntity == null)
-                return false;
+       try
+       {
+           var existingEntity = await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
+           if (existingEntity == null)
+               return false;
 
-            //_dbSet.Remove(entity);
-            _dbSet.Remove(existingEntity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error deleting {nameof(TEntity)} entity :: {ex.Message}");
-            return false;
-
-        }
+           //_dbSet.Remove(entity);
+           _dbSet.Remove(existingEntity);
+           await _context.SaveChangesAsync();
+           return true;
+       }
+       catch (Exception ex)
+       {
+           Debug.WriteLine($"Error deleting {nameof(TEntity)} entity :: {ex.Message}");
+           return false;
+       }
     } */
 
     #endregion

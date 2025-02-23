@@ -12,14 +12,12 @@ public class StatusTypeService(IStatusTypeRepository statusTypeRepository) : ISt
 {
     private readonly IStatusTypeRepository _statusTypeRepository = statusTypeRepository;
 
-    //Does not Include Project list in the returned StatusTypes
-    //Method is used to populate ComboBox - Project list not needed
+    //Without Eager Loading (use method to populate ComboBoxes)
     public async Task<IEnumerable<StatusType>> GetAllStatusTypesAsync()
     {
         try
         {
-            //TO DO: Change name of method
-            var entities = await _statusTypeRepository.GetAllAsyncWithQuery();
+            var entities = await _statusTypeRepository.GetAllAsync();
             var statusTypes = entities.Select(StatusTypeFactory.Create).ToList();
             return statusTypes != null && statusTypes.Any() ? statusTypes : [];
         }
@@ -30,13 +28,12 @@ public class StatusTypeService(IStatusTypeRepository statusTypeRepository) : ISt
         }
     }
 
-    //Does not Include Project list in returned StatusTypeEntity
+    //Without Eager Loading
     public async Task<StatusTypeEntity?> GetStatusTypeEntityAsync(Expression<Func<StatusTypeEntity, bool>> expression)
     {
         try
         {
-            //TO DO: Change name of method
-            var statusType = await _statusTypeRepository.GetAsyncWithQuery(expression);
+            var statusType = await _statusTypeRepository.GetAsync(expression);
             return statusType;
         }
         catch (Exception ex)

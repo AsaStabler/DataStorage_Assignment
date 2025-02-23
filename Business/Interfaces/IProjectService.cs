@@ -9,9 +9,7 @@ public interface IProjectService
 {
     Task<bool> CreateProjectAsync(ProjectRegistrationForm form);
 
-    Task<IEnumerable<Project>> GetAllProjectsAsyncWithQuery();
-    //Task<IEnumerable<Project>> GetAllProjectsAsync();   //OLD - to be removed
-
+    Task<IEnumerable<Project>> GetAllProjectsAsync();
     Task<Project?> GetProjectAsync(Expression<Func<ProjectEntity, bool>> expression);
     Task<Project?> GetProjectByIdAsync(int Id);
 

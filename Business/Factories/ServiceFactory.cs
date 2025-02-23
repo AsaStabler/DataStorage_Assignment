@@ -12,6 +12,7 @@ public static class ServiceFactory
             Id = entity.Id,
             ServiceName = entity.ServiceName,
             Price = entity.Price,
+            ServiceDescription = entity.ServiceName + " (" + entity.Price + " kr/h)",
         };
     }
 }

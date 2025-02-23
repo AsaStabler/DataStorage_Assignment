@@ -12,32 +12,32 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     public DbSet<ProjectEntity> Projects { get; set; }
 
-    //protected override void OnModelCreating(ModelBuilder modelBuilder)
-    //{
-    //    modelBuilder.Entity<ProjectEntity>()
-    //        .HasOne(x => x.Customer)
-    //        .WithMany(x => x.Projects)
-    //        .HasForeignKey(x => x.CustomerId)
-    //        .OnDelete(DeleteBehavior.Restrict);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ProjectEntity>()
+            .HasOne(x => x.Customer)
+            .WithMany(x => x.Projects)
+            .HasForeignKey(x => x.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-    //    modelBuilder.Entity<ProjectEntity>()
-    //        .HasOne(x => x.Status)
-    //        .WithMany(x => x.Projects)
-    //        .HasForeignKey(x => x.StatusId)
-    //        .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectEntity>()
+            .HasOne(x => x.Status)
+            .WithMany(x => x.Projects)
+            .HasForeignKey(x => x.StatusId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-    //    modelBuilder.Entity<ProjectEntity>()
-    //       .HasOne(x => x.User)
-    //       .WithMany(x => x.Projects)
-    //       .HasForeignKey(x => x.UserId)
-    //       .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProjectEntity>()
+           .HasOne(x => x.User)
+           .WithMany(x => x.Projects)
+           .HasForeignKey(x => x.UserId)
+           .OnDelete(DeleteBehavior.Restrict);
 
-    //    modelBuilder.Entity<ProjectEntity>()
-    //       .HasOne(x => x.Service)
-    //       .WithMany(x => x.Projects)
-    //       .HasForeignKey(x => x.ServiceId)
-    //       .OnDelete(DeleteBehavior.Restrict);
-    //}
+        modelBuilder.Entity<ProjectEntity>()
+           .HasOne(x => x.Service)
+           .WithMany(x => x.Projects)
+           .HasForeignKey(x => x.ServiceId)
+           .OnDelete(DeleteBehavior.Restrict);
+    }
 }
 
 

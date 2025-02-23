@@ -13,15 +13,12 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
 {
     private readonly ICustomerRepository _customerRepository = customerRepository;
 
-    //Does not Include Project list in the returned Customers
-    //Method is used to populate ComboBox - Project list not needed
+    //Without Eager Loading (use method to populate ComboBoxes)
     public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
     {
         try 
         { 
-            //TO DO: Change name of method
-            //var entities = await _customerRepository.GetAllAsyncWithQuery();
-            var entities = await _customerRepository.GetAllAsync();  //Testing!!!
+            var entities = await _customerRepository.GetAllAsync(); 
             var customers = entities.Select(CustomerFactory.Create).ToList();
             return customers != null && customers.Any() ? customers : [];
         }
@@ -32,22 +29,12 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
         }
     }
 
-    /* OLD version - before impl Queryable in BaseRepository
-    public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
-    {
-        var entities = await _customerRepository.GetAllAsync();
-        var customers = entities.Select(CustomerFactory.Create).ToList();
-        return customers != null && customers.Any() ? customers : [];
-    }
-    */
-
-    //Includes Project list in returned Customer
+    //With Eager Loading
     public async Task<Customer?> GetCustomerAsync(Expression<Func<CustomerEntity, bool>> expression)
     {
         try
         {
-            //TO DO: Change name of method
-            var entity = await _customerRepository.GetAsyncWithQuery(expression, query =>
+            var entity = await _customerRepository.GetAsync(expression, query =>
             query.Include(x => x.Projects)
             );
 
@@ -62,14 +49,12 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
 
     }
 
-    //Does not Include Project list in returned CustomerEntity
+    //Without Eager Loading
     public async Task<CustomerEntity?> GetCustomerEntityAsync(Expression<Func<CustomerEntity, bool>> expression)
     {
         try
         {
-            //TO DO: Change name of method
-            //var customer = await _customerRepository.GetAsyncWithQuery(expression);
-            var customer = await _customerRepository.GetAsync(expression);   //Testing!!!
+            var customer = await _customerRepository.GetAsync(expression); 
             return customer;
         }
         catch (Exception ex)

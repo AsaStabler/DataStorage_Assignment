@@ -18,10 +18,7 @@ public partial class AddProjectViewModel : ObservableObject
     private readonly IServiceService _serviceService;
 
     [ObservableProperty]
-    private string title = "New Project";  //To Do: Ska tas bort när stylat headline
-
-    [ObservableProperty]
-    private string headline = "New Contact";
+    private string headline = "New Project";
 
     //The ProjectRegistrationForm to be filled with input data in AddProjectView
     [ObservableProperty]
@@ -59,6 +56,9 @@ public partial class AddProjectViewModel : ObservableObject
     [ObservableProperty]
     private Service _selectedService = new();
 
+    //To display an error message
+    [ObservableProperty]
+    private string _errorMsg = null!;
 
     public AddProjectViewModel(IServiceProvider serviceProvider, IProjectService projectService, 
                                ICustomerService customerService, IStatusTypeService statusTypeService,
@@ -105,6 +105,10 @@ public partial class AddProjectViewModel : ObservableObject
         {
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
             mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProjectsViewModel>();
+        }
+        else
+        {
+            ErrorMsg = "The project could not be saved.";
         }
     }
 

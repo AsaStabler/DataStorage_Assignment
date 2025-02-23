@@ -38,7 +38,7 @@
                 <TextBlock Text="End Date" Style="{StaticResource LabelText}" />
                 <DatePicker SelectedDate="{Binding Project.EndDate}" IsEnabled="False"/>
 
-                <TextBlock Text="Project Status" />
+                <TextBlock Text="Project Status" Style="{StaticResource LabelText}" />
                 <ComboBox Name="StatusComboBox"  
                           ItemsSource="{Binding StatusTypes}"
                           SelectedItem="{Binding Path=SelectedStatusType, Mode=TwoWay}"
@@ -54,22 +54,23 @@
                           SelectedValuePath="Id"
                           IsEnabled="False"/>
 
-                <TextBlock Text="Project Leader" />
+                <TextBlock Text="Project Leader" Style="{StaticResource LabelText}" />
                 <ComboBox Name="UsersComboBox"  
                       ItemsSource="{Binding Users}"
                       SelectedItem="{Binding Path=SelectedUser, Mode=TwoWay}"
-                      DisplayMemberPath="LastName" 
+                      DisplayMemberPath="UserDisplayName" 
                       SelectedValuePath="Id"
                       IsEnabled="False"/>
 
-                <TextBlock Text="Type of Service" />
+                <TextBlock Text="Type of Service" Style="{StaticResource LabelText}" />
                 <ComboBox Name="ServicesComboBox"  
                       ItemsSource="{Binding Services}"
                       SelectedItem="{Binding Path=SelectedService, Mode=TwoWay}"
-                      DisplayMemberPath="ServiceName" 
+                      DisplayMemberPath="ServiceDescription" 
                       SelectedValuePath="Id"
                       IsEnabled="False"/>
 
+                <TextBlock Text="{Binding ErrorMsg}" FontSize="15" FontWeight="Bold" TextAlignment="Center" />
             </StackPanel>
 
             <StackPanel Grid.Row="2">

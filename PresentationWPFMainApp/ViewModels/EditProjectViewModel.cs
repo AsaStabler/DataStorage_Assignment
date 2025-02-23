@@ -60,6 +60,10 @@ public partial class EditProjectViewModel : ObservableObject
     [ObservableProperty]
     private Service _selectedService = new();
 
+    //To display an error message
+    [ObservableProperty]
+    private string _errorMsg = null!;
+
     public EditProjectViewModel(IServiceProvider serviceProvider, IProjectService projectService,
                                 ICustomerService customerService, IStatusTypeService statusTypeService,
                                 IUserService userService, IServiceService serviceService)
@@ -114,6 +118,10 @@ public partial class EditProjectViewModel : ObservableObject
         {
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
             mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ProjectsViewModel>();
+        }
+        else
+        {
+            ErrorMsg = "The project could not be updated.";
         }
     }
 

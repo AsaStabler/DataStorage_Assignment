@@ -13,7 +13,7 @@ public partial class ProjectsViewModel : ObservableObject
     private readonly IProjectService _projectService;
 
     [ObservableProperty]
-    private string title = "Project List";
+    private string headline = "Project List";
 
     [ObservableProperty]
     private ObservableCollection<Project> _projects = [];
@@ -29,11 +29,7 @@ public partial class ProjectsViewModel : ObservableObject
 
     public async Task GetProjectsAsync() 
     {
-        //IEnumerable<Project> testProjectsList = [];
-        //testProjectsList = await _projectService.GetAllProjectsAsyncWithQuery();
-
-        //TO DO: Ändra namn på metoden
-        var tempProjects = await _projectService.GetAllProjectsAsyncWithQuery();
+        var tempProjects = await _projectService.GetAllProjectsAsync();
         Projects = new ObservableCollection<Project>(tempProjects);
     }
 

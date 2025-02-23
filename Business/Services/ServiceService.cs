@@ -12,14 +12,12 @@ public class ServiceService(IServiceRepository serviceRepository) : IServiceServ
 {
     private readonly IServiceRepository _serviceRepository = serviceRepository;
 
-    //Does not Include Project list in the returned Services
-    //Method is used to populate ComboBox - Project list not needed
+    //Without Eager Loading (use method to populate ComboBoxes)
     public async Task<IEnumerable<Service>> GetAllServicesAsync()
     {
         try
         {
-            //TO DO: Change name of method
-            var entities = await _serviceRepository.GetAllAsyncWithQuery();
+            var entities = await _serviceRepository.GetAllAsync();
             var services = entities.Select(ServiceFactory.Create).ToList();
             return services != null && services.Any() ? services : [];
         }
@@ -30,13 +28,12 @@ public class ServiceService(IServiceRepository serviceRepository) : IServiceServ
         }
     }
 
-    //Does not Include Project list in returned ServiceEntity
+    //Without Eager Loading
     public async Task<ServiceEntity?> GetServiceEntityAsync(Expression<Func<ServiceEntity, bool>> expression)
     {
         try
         { 
-            //TO DO: Change name of method
-            var service = await _serviceRepository.GetAsyncWithQuery(expression);
+            var service = await _serviceRepository.GetAsync(expression);
             return service;
         }
         catch (Exception ex)
